@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dr. Lucas Gabriel · Psicólogo Clínico</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --purple: #7C3AED;
+  --purple-light: #A78BFA;
+  --purple-dark: #5B21B6;
+  --blue: #3B82F6;
+  --blue-light: #93C5FD;
+  --indigo: #4F46E5;
+  --bg: #0D0D1A;
+  --bg2: #11112A;
+  --bg3: #16163A;
+  --surface: rgba(255,255,255,0.04);
+  --border: rgba(167,139,250,0.15);
+  --text: #F1F0FF;
+  --muted: rgba(241,240,255,0.5);
+  --faint: rgba(241,240,255,0.2);
+  --grad: linear-gradient(135deg, var(--purple) 0%, var(--blue) 100%);
+  --grad-soft: linear-gradient(135deg, rgba(124,58,237,0.3) 0%, rgba(59,130,246,0.3) 100%);
+}
+
+html { scroll-behavior: smooth; }
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; cursor: none; }
+
+.cursor { width: 8px; height: 8px; background: var(--purple-light); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9999; transition: transform 0.1s; }
+.cursor-ring { width: 36px; height: 36px; border: 1px solid rgba(167,139,250,0.4); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9998; transition: width 0.3s, height 0.3s, border-color 0.3s; }
+
+/* NAV */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  padding: 1.2rem 5rem;
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(13,13,26,0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo { display: flex; align-items: center; gap: 0.7rem; text-decoration: none; }
+.nav-logo-icon {
+  width: 34px; height: 34px; border-radius: 8px;
+  background: var(--grad);
+  display: flex; align-items: center; justify-content: center;
+}
+.nav-logo-text { font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: 1rem; color: var(--text); }
+.nav-links { display: flex; gap: 2.5rem; list-style: none; }
+.nav-links a { color: var(--muted); text-decoration: none; font-size: 0.85rem; transition: color 0.2s; }
+.nav-links a:hover { color: var(--text); }
+.nav-cta {
+  background: var(--grad); border: none; color: white;
+  padding: 0.6rem 1.4rem; border-radius: 8px;
+  font-family: 'DM Sans', sans-serif; font-size: 0.85rem; font-weight: 500;
+  cursor: none; transition: opacity 0.2s, transform 0.2s;
+}
+.nav-cta:hover { opacity: 0.85; transform: translateY(-1px); }
+
+/* HERO */
+.hero {
+  min-height: 100vh;
+  display: grid; grid-template-columns: 1fr 1fr;
+  position: relative; overflow: hidden; padding-top: 72px;
+}
+.hero-bg {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 70% 60% at 80% 40%, rgba(124,58,237,0.25) 0%, transparent 65%),
+    radial-gradient(ellipse 50% 50% at 20% 80%, rgba(59,130,246,0.15) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 40% at 50% 10%, rgba(79,70,229,0.12) 0%, transparent 55%),
+    var(--bg);
+}
+/* Grid lines bg */
+.hero-bg::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(124,58,237,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(124,58,237,0.06) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+.hero-bg::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(13,13,26,0) 0%, var(--bg) 100%);
+}
+
+.hero-left {
+  position: relative; z-index: 2;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 4rem 3rem 6rem 5rem;
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: rgba(124,58,237,0.15); border: 1px solid rgba(124,58,237,0.3);
+  padding: 0.4rem 1rem; border-radius: 100px;
+  font-size: 0.75rem; color: var(--purple-light);
+  margin-bottom: 2rem;
+  opacity: 0; animation: fadeUp 0.7s 0.2s forwards;
+}
+.badge-dot { width: 6px; height: 6px; background: var(--purple-light); border-radius: 50%; animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
+
+.hero-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(3.2rem, 5vw, 5.5rem);
+  font-weight: 300; line-height: 1.07; color: var(--text);
+  opacity: 0; animation: fadeUp 0.8s 0.4s forwards;
+}
+.hero-title .grad-text {
+  background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  font-style: italic;
+}
+
+.hero-sub {
+  margin-top: 1.8rem; max-width: 420px;
+  font-size: 1rem; line-height: 1.8; color: var(--muted); font-weight: 300;
+  opacity: 0; animation: fadeUp 0.8s 0.6s forwards;
+}
+
+.hero-stats {
+  display: flex; gap: 2.5rem; margin-top: 3rem;
+  opacity: 0; animation: fadeUp 0.8s 0.8s forwards;
+}
+.stat-item { display: flex; flex-direction: column; }
+.stat-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.5rem; font-weight: 300; line-height: 1;
+  background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.stat-label { font-size: 0.72rem; color: var(--faint); margin-top: 0.3rem; letter-spacing: 0.05em; }
+.stat-divider { width: 1px; background: var(--border); align-self: stretch; }
+
+.hero-actions {
+  display: flex; gap: 1rem; margin-top: 2.8rem; align-items: center;
+  opacity: 0; animation: fadeUp 0.8s 1s forwards;
+}
+.btn-primary {
+  background: var(--grad); border: none; color: white;
+  padding: 0.9rem 2.2rem; border-radius: 10px;
+  font-family: 'DM Sans', sans-serif; font-size: 0.9rem; font-weight: 500;
+  cursor: none; transition: all 0.2s; position: relative; overflow: hidden;
+  box-shadow: 0 4px 20px rgba(124,58,237,0.35);
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(124,58,237,0.5); }
+.btn-outline {
+  background: transparent; border: 1px solid var(--border);
+  color: var(--muted); padding: 0.9rem 2rem; border-radius: 10px;
+  font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+  cursor: none; transition: all 0.2s;
+}
+.btn-outline:hover { border-color: var(--purple-light); color: var(--text); }
+
+.hero-right {
+  position: relative; z-index: 2;
+  display: flex; align-items: center; justify-content: center; padding: 4rem 4rem 4rem 2rem;
+  opacity: 0; animation: fadeIn 1.2s 0.5s forwards;
+}
+
+.profile-card {
+  width: 380px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(124,58,237,0.1);
+  backdrop-filter: blur(10px);
+  position: relative;
+}
+.profile-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: var(--grad);
+}
+.profile-photo {
+  width: 100%; height: 260px;
+  background: linear-gradient(160deg, rgba(124,58,237,0.3) 0%, rgba(59,130,246,0.2) 50%, rgba(13,13,26,1) 100%);
+  display: flex; align-items: center; justify-content: center; flex-direction: column;
+  gap: 0.8rem; position: relative; overflow: hidden;
+}
+.profile-photo::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom, transparent 60%, rgba(13,13,26,0.8) 100%);
+}
+.photo-icon { opacity: 0.2; z-index: 1; }
+.photo-label { font-size: 0.8rem; color: var(--faint); letter-spacing: 0.15em; text-transform: uppercase; z-index: 1; }
+.profile-body { padding: 1.8rem; }
+.profile-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.6rem; font-weight: 400; color: var(--text);
+}
+.profile-specialty { font-size: 0.8rem; color: var(--purple-light); margin-top: 0.2rem; }
+.profile-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.2rem; }
+.tag {
+  background: rgba(124,58,237,0.12); border: 1px solid rgba(124,58,237,0.2);
+  padding: 0.3rem 0.8rem; border-radius: 100px;
+  font-size: 0.72rem; color: var(--purple-light);
+}
+.profile-rating {
+  display: flex; align-items: center; gap: 0.6rem; margin-top: 1.4rem;
+  padding-top: 1.2rem; border-top: 1px solid var(--border);
+}
+.rating-stars { color: #FBBF24; font-size: 0.85rem; }
+.rating-text { font-size: 0.8rem; color: var(--muted); }
+
+/* floating badges */
+.float-badge {
+  position: absolute;
+  background: rgba(17,17,42,0.9); border: 1px solid var(--border);
+  border-radius: 12px; padding: 0.8rem 1.1rem;
+  backdrop-filter: blur(12px);
+  display: flex; align-items: center; gap: 0.7rem;
+}
+.float-badge-1 { top: 30%; right: -20px; animation: float1 4s ease-in-out infinite; }
+.float-badge-2 { bottom: 20%; left: -20px; animation: float2 5s ease-in-out infinite; }
+@keyframes float1 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+@keyframes float2 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(8px)} }
+.fb-icon { width: 32px; height: 32px; border-radius: 8px; background: var(--grad); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.fb-text strong { display: block; font-size: 0.85rem; color: var(--text); line-height: 1.2; }
+.fb-text span { font-size: 0.7rem; color: var(--muted); }
+
+/* SECTIONS */
+.section { padding: 7rem 5rem; position: relative; }
+
+.section-chip {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: rgba(124,58,237,0.1); border: 1px solid rgba(124,58,237,0.2);
+  padding: 0.3rem 0.9rem; border-radius: 100px;
+  font-size: 0.7rem; color: var(--purple-light); margin-bottom: 1.5rem;
+  letter-spacing: 0.05em; text-transform: uppercase;
+}
+
+/* ABOUT */
+.about { background: var(--bg2); display: grid; grid-template-columns: 1.1fr 1fr; gap: 6rem; align-items: center; }
+
+.about-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2.2rem, 3.5vw, 3.5rem);
+  font-weight: 300; line-height: 1.2; color: var(--text);
+}
+.about-title span { background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+.about-body { margin-top: 1.5rem; font-size: 0.95rem; line-height: 1.85; color: var(--muted); }
+
+.about-pills { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 2rem; }
+.pill {
+  background: var(--surface); border: 1px solid var(--border);
+  padding: 0.45rem 1rem; border-radius: 8px;
+  font-size: 0.78rem; color: var(--muted); transition: all 0.2s;
+}
+.pill:hover { background: rgba(124,58,237,0.15); border-color: rgba(124,58,237,0.4); color: var(--purple-light); }
+
+.about-right { display: flex; flex-direction: column; gap: 1rem; }
+.cred-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 1.4rem 1.6rem;
+  display: flex; align-items: flex-start; gap: 1rem;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.cred-card:hover { border-color: rgba(124,58,237,0.4); transform: translateX(4px); }
+.cred-icon { width: 36px; height: 36px; border-radius: 9px; background: rgba(124,58,237,0.15); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.cred-label { font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--purple-light); }
+.cred-value { font-size: 0.95rem; color: var(--text); margin-top: 0.2rem; font-weight: 400; }
+.cred-sub { font-size: 0.78rem; color: var(--faint); margin-top: 0.1rem; }
+
+/* SERVICES */
+.services { background: var(--bg); }
+.services-head { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 4rem; }
+.services-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2.2rem, 3.5vw, 3.8rem);
+  font-weight: 300; line-height: 1.1; color: var(--text);
+}
+.services-title span { background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-style: italic; }
+.services-sub { max-width: 260px; font-size: 0.88rem; line-height: 1.7; color: var(--faint); }
+
+.services-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
+.service-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; padding: 2rem 2rem 2.2rem;
+  transition: all 0.3s; position: relative; overflow: hidden;
+}
+.service-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: var(--grad); transform: scaleX(0); transition: transform 0.4s; transform-origin: left;
+}
+.service-card:hover { background: rgba(124,58,237,0.08); border-color: rgba(124,58,237,0.35); transform: translateY(-4px); }
+.service-card:hover::before { transform: scaleX(1); }
+.service-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 3rem; font-weight: 300; line-height: 1;
+  background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  opacity: 0.3; margin-bottom: 1.2rem; transition: opacity 0.3s;
+}
+.service-card:hover .service-num { opacity: 0.6; }
+.service-name { font-size: 1.05rem; font-weight: 500; color: var(--text); margin-bottom: 0.7rem; }
+.service-desc { font-size: 0.85rem; line-height: 1.7; color: var(--muted); }
+
+/* TESTIMONIALS */
+.testimonials { background: var(--bg2); }
+.testi-head { text-align: center; margin-bottom: 4rem; }
+.testi-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2.2rem, 3vw, 3.5rem);
+  font-weight: 300; color: var(--text);
+}
+.testi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+.testi-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; padding: 2rem;
+  transition: all 0.3s;
+}
+.testi-card:hover { border-color: rgba(124,58,237,0.35); transform: translateY(-4px); box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
+.testi-quote-icon {
+  width: 36px; height: 36px; border-radius: 8px;
+  background: rgba(124,58,237,0.15); border: 1px solid rgba(124,58,237,0.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; color: var(--purple-light); margin-bottom: 1.2rem;
+}
+.testi-text { font-size: 0.9rem; line-height: 1.8; color: var(--muted); }
+.testi-author { display: flex; align-items: center; gap: 0.9rem; margin-top: 1.5rem; padding-top: 1.2rem; border-top: 1px solid var(--border); }
+.author-av {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: var(--grad); display: flex; align-items: center; justify-content: center;
+  font-family: 'Cormorant Garamond', serif; font-size: 1rem; color: white; flex-shrink: 0;
+}
+.author-info strong { font-size: 0.88rem; color: var(--text); display: block; }
+.author-info span { font-size: 0.72rem; color: var(--faint); }
+.stars { color: #FBBF24; font-size: 0.72rem; margin-top: 0.2rem; }
+
+/* BOOKING */
+.booking-wrap { background: var(--bg); display: grid; grid-template-columns: 1fr 1.2fr; min-height: 90vh; }
+.booking-left {
+  background: linear-gradient(160deg, rgba(124,58,237,0.15) 0%, rgba(59,130,246,0.08) 100%), var(--bg2);
+  border-right: 1px solid var(--border);
+  padding: 5rem 4rem; display: flex; flex-direction: column; justify-content: center;
+  position: relative; overflow: hidden;
+}
+.booking-left::before {
+  content: '';
+  position: absolute; top: -100px; right: -100px;
+  width: 400px; height: 400px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(124,58,237,0.2) 0%, transparent 70%);
+  pointer-events: none;
+}
+.booking-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2.2rem, 3vw, 3.2rem);
+  font-weight: 300; color: var(--text); line-height: 1.2; margin-bottom: 1rem;
+}
+.booking-sub { font-size: 0.9rem; color: var(--muted); line-height: 1.7; margin-bottom: 3rem; }
+.bk-info { display: flex; flex-direction: column; gap: 1.2rem; }
+.bk-item { display: flex; align-items: center; gap: 1rem; }
+.bk-icon {
+  width: 38px; height: 38px; border-radius: 10px;
+  background: rgba(124,58,237,0.15); border: 1px solid rgba(124,58,237,0.2);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.bk-text strong { font-size: 0.88rem; color: var(--text); display: block; }
+.bk-text span { font-size: 0.78rem; color: var(--faint); }
+
+.booking-right { padding: 5rem 4rem; display: flex; align-items: center; justify-content: center; }
+.booking-form { width: 100%; max-width: 500px; }
+
+/* Steps */
+.steps { display: flex; gap: 0.5rem; margin-bottom: 3rem; align-items: center; }
+.step-bar { height: 3px; border-radius: 10px; background: var(--border); flex: 1; transition: background 0.3s; }
+.step-bar.active { background: var(--grad); }
+.step-bar.done { background: rgba(124,58,237,0.4); }
+.step-label { font-size: 0.7rem; color: var(--faint); margin-left: 0.5rem; }
+
+.form-step { display: none; }
+.form-step.active { display: block; animation: fadeUp 0.35s forwards; }
+
+.step-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.9rem; font-weight: 300; color: var(--text); margin-bottom: 0.4rem;
+}
+.step-sub { font-size: 0.85rem; color: var(--faint); margin-bottom: 2.5rem; }
+
+/* Calendar */
+.cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.2rem; }
+.cal-month { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; color: var(--text); }
+.cal-nav {
+  background: var(--surface); border: 1px solid var(--border);
+  color: var(--muted); width: 30px; height: 30px; border-radius: 8px;
+  cursor: none; font-size: 1rem; display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.cal-nav:hover { border-color: var(--purple-light); color: var(--text); }
+.cal-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 4px; }
+.cal-weekday { text-align: center; font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--faint); padding: 0.3rem 0; }
+.cal-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.cal-day {
+  aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+  font-size: 0.82rem; color: var(--muted); cursor: none; transition: all 0.15s;
+  border-radius: 8px; position: relative;
+}
+.cal-day.empty { pointer-events: none; }
+.cal-day.available:hover { background: rgba(124,58,237,0.2); color: var(--text); }
+.cal-day.selected { background: var(--grad); color: white; font-weight: 500; }
+.cal-day.today::after { content: ''; position: absolute; bottom: 4px; width: 4px; height: 4px; border-radius: 50%; background: var(--purple-light); }
+.cal-day.today.selected::after { background: rgba(255,255,255,0.7); }
+.cal-day.unavailable { opacity: 0.2; pointer-events: none; }
+
+/* Time */
+.time-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; }
+.time-slot {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 0.7rem; text-align: center;
+  font-size: 0.83rem; color: var(--muted); cursor: none; transition: all 0.2s;
+}
+.time-slot:hover { border-color: var(--purple-light); color: var(--text); background: rgba(124,58,237,0.1); }
+.time-slot.selected { background: var(--grad); color: white; border-color: transparent; }
+.time-slot.unavailable { opacity: 0.2; pointer-events: none; }
+
+/* Fields */
+.field { display: flex; flex-direction: column; gap: 0.45rem; margin-bottom: 1.2rem; }
+.field label { font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--faint); }
+.field input, .field select, .field textarea {
+  background: var(--surface); border: 1px solid var(--border);
+  color: var(--text); padding: 0.8rem 1rem; border-radius: 10px;
+  font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+  outline: none; transition: border-color 0.2s; width: 100%; cursor: none;
+}
+.field input:focus, .field select:focus, .field textarea:focus { border-color: var(--purple); box-shadow: 0 0 0 3px rgba(124,58,237,0.1); }
+.field input::placeholder, .field textarea::placeholder { color: var(--faint); }
+.field select option { background: #16163a; }
+.field textarea { resize: none; height: 90px; }
+.fields-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+
+.form-nav { display: flex; gap: 0.8rem; margin-top: 1.8rem; align-items: center; }
+.btn-back {
+  background: var(--surface); border: 1px solid var(--border);
+  color: var(--muted); padding: 0.8rem 1.5rem; border-radius: 10px;
+  font-family: 'DM Sans', sans-serif; font-size: 0.85rem;
+  cursor: none; transition: all 0.2s;
+}
+.btn-back:hover { border-color: var(--purple-light); color: var(--text); }
+
+/* Success */
+.success-state { text-align: center; padding: 2rem 0; flex-direction: column; align-items: center; gap: 1.2rem; }
+.success-icon {
+  width: 68px; height: 68px; border-radius: 50%;
+  background: var(--grad); display: flex; align-items: center; justify-content: center;
+  font-size: 1.6rem; box-shadow: 0 8px 30px rgba(124,58,237,0.4);
+}
+.success-title { font-family: 'Cormorant Garamond', serif; font-size: 2.3rem; font-weight: 300; color: var(--text); }
+.success-sub { font-size: 0.88rem; color: var(--muted); max-width: 320px; line-height: 1.7; }
+
+/* FOOTER */
+footer {
+  background: var(--bg);
+  padding: 2.5rem 5rem;
+  display: flex; align-items: center; justify-content: space-between;
+  border-top: 1px solid var(--border);
+}
+.footer-logo { display: flex; align-items: center; gap: 0.6rem; }
+.footer-logo-icon { width: 28px; height: 28px; border-radius: 7px; background: var(--grad); display: flex; align-items: center; justify-content: center; }
+.footer-logo-text { font-size: 0.9rem; color: var(--muted); }
+.footer-copy { font-size: 0.75rem; color: var(--faint); }
+.footer-badge { font-size: 0.72rem; color: var(--faint); }
+
+/* ANIMATIONS */
+@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.6s, transform 0.6s; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal-d1 { transition-delay: 0.1s; }
+.reveal-d2 { transition-delay: 0.2s; }
+.reveal-d3 { transition-delay: 0.3s; }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">
+    <div class="nav-logo-icon">
+      <svg width="18" height="18" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0112 2a8 8 0 018 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg>
+    </div>
+    <span class="nav-logo-text">Dr. Lucas Gabriel</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#sobre">Sobre</a></li>
+    <li><a href="#especialidades">Especialidades</a></li>
+    <li><a href="#depoimentos">Depoimentos</a></li>
+  </ul>
+  <button class="nav-cta" onclick="document.getElementById('agendar').scrollIntoView({behavior:'smooth'})">Agendar consulta</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-left">
+    <div class="hero-badge"><span class="badge-dot"></span>Disponível para novos pacientes</div>
+    <h1 class="hero-title">
+      Cuidando da sua<br>
+      <span class="grad-text">saúde mental</span><br>
+      com excelência
+    </h1>
+    <p class="hero-sub">Especialista em ansiedade, TCC e desenvolvimento pessoal. Atendimento presencial em Arapongas e online para todo o Brasil.</p>
+    <div class="hero-stats">
+      <div class="stat-item"><span class="stat-num">8+</span><span class="stat-label">Anos de experiência</span></div>
+      <div class="stat-divider"></div>
+      <div class="stat-item"><span class="stat-num">500+</span><span class="stat-label">Pacientes atendidos</span></div>
+      <div class="stat-divider"></div>
+      <div class="stat-item"><span class="stat-num">98%</span><span class="stat-label">Satisfação</span></div>
+    </div>
+    <div class="hero-actions">
+      <button class="btn-primary" onclick="document.getElementById('agendar').scrollIntoView({behavior:'smooth'})">Agendar consulta</button>
+      <button class="btn-outline" onclick="document.getElementById('sobre').scrollIntoView({behavior:'smooth'})">Conhecer mais</button>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div style="position:relative;">
+      <div class="profile-card">
+        <div class="profile-photo">
+          <svg class="photo-icon" width="56" height="56" fill="none" stroke="white" stroke-width="1" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8z"/></svg>
+          <span class="photo-label">Foto do profissional</span>
+        </div>
+        <div class="profile-body">
+          <div class="profile-name">Dr. Lucas Gabriel</div>
+          <div class="profile-specialty">Psicólogo Clínico · CRP 06/12345</div>
+          <div class="profile-tags">
+            <span class="tag">Ansiedade</span>
+            <span class="tag">TCC</span>
+            <span class="tag">Depressão</span>
+            <span class="tag">Burnout</span>
+          </div>
+          <div class="profile-rating">
+            <span class="rating-stars">★★★★★</span>
+            <span class="rating-text">5.0 · 127 avaliações</span>
+          </div>
+        </div>
+      </div>
+      <div class="float-badge float-badge-1">
+        <div class="fb-icon"><svg width="16" height="16" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg></div>
+        <div class="fb-text"><strong>CRP Ativo</strong><span>Verificado pelo CFP</span></div>
+      </div>
+      <div class="float-badge float-badge-2">
+        <div class="fb-icon"><svg width="16" height="16" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
+        <div class="fb-text"><strong>Próx. disponível</strong><span>Hoje às 14:00</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="section about" id="sobre">
+  <div>
+    <div class="section-chip reveal">✦ Sobre mim</div>
+    <h2 class="about-title reveal reveal-d1">Uma abordagem <span>humanizada</span><br>para resultados reais</h2>
+    <p class="about-body reveal reveal-d2">Olá, sou Lucas Gabriel, psicólogo clínico com graduação pela UFX e mais de 8 anos dedicados ao cuidado da saúde mental. Minha prática é fundamentada na Terapia Cognitivo-Comportamental (TCC), uma das abordagens mais eficazes e respaldadas cientificamente.</p>
+    <p class="about-body reveal reveal-d2" style="margin-top:0.8rem;">Acredito que cada pessoa carrega uma história única. Por isso, construo um espaço seguro e sem julgamentos onde você pode ser quem realmente é.</p>
+    <div class="about-pills reveal reveal-d3">
+      <span class="pill">Ansiedade</span><span class="pill">Depressão</span><span class="pill">Burnout</span>
+      <span class="pill">Relacionamentos</span><span class="pill">Autoestima</span><span class="pill">Desenvolvimento pessoal</span>
+    </div>
+  </div>
+  <div class="about-right">
+    <div class="cred-card reveal">
+      <div class="cred-icon"><svg width="16" height="16" fill="none" stroke="var(--purple-light)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></div>
+      <div><div class="cred-label">Formação</div><div class="cred-value">Bacharelado em Psicologia</div><div class="cred-sub">UFX — Universidade Federal · 2016</div></div>
+    </div>
+    <div class="cred-card reveal reveal-d1">
+      <div class="cred-icon"><svg width="16" height="16" fill="none" stroke="var(--purple-light)" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg></div>
+      <div><div class="cred-label">Especialização</div><div class="cred-value">Terapia Cognitivo-Comportamental</div><div class="cred-sub">Instituto de TCC · Pós-graduação · 2018</div></div>
+    </div>
+    <div class="cred-card reveal reveal-d2">
+      <div class="cred-icon"><svg width="16" height="16" fill="none" stroke="var(--purple-light)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg></div>
+      <div><div class="cred-label">Registro profissional</div><div class="cred-value">CRP 06/12345</div><div class="cred-sub">Conselho Regional de Psicologia — Ativo</div></div>
+    </div>
+    <div class="cred-card reveal reveal-d3">
+      <div class="cred-icon"><svg width="16" height="16" fill="none" stroke="var(--purple-light)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0112 2a8 8 0 018 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg></div>
+      <div><div class="cred-label">Atendimento</div><div class="cred-value">Presencial & Online</div><div class="cred-sub">Arapongas, PR · Todo o Brasil via plataforma</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="section services" id="especialidades">
+  <div class="services-head">
+    <div>
+      <div class="section-chip reveal">✦ Especialidades</div>
+      <h2 class="services-title reveal reveal-d1">O que posso<br>fazer por <span>você</span></h2>
+    </div>
+    <p class="services-sub reveal reveal-d2">Abordagens terapêuticas baseadas em evidências para promover bem-estar duradouro.</p>
+  </div>
+  <div class="services-grid">
+    <div class="service-card reveal"><div class="service-num">01</div><div class="service-name">Ansiedade & Pânico</div><p class="service-desc">Técnicas cognitivas e comportamentais para controlar pensamentos intrusivos, ataques de pânico e preocupações excessivas.</p></div>
+    <div class="service-card reveal reveal-d1"><div class="service-num">02</div><div class="service-name">Depressão</div><p class="service-desc">Tratamento humanizado para recuperar motivação, prazer nas atividades e qualidade de vida.</p></div>
+    <div class="service-card reveal reveal-d2"><div class="service-num">03</div><div class="service-name">Burnout & Estresse</div><p class="service-desc">Estratégias para lidar com o esgotamento profissional e reequilibrar suas energias.</p></div>
+    <div class="service-card reveal"><div class="service-num">04</div><div class="service-name">Relacionamentos</div><p class="service-desc">Melhora de vínculos afetivos, comunicação não-violenta e resolução de conflitos.</p></div>
+    <div class="service-card reveal reveal-d1"><div class="service-num">05</div><div class="service-name">Autoconhecimento</div><p class="service-desc">Processo terapêutico de descoberta pessoal para construção de uma identidade mais sólida.</p></div>
+    <div class="service-card reveal reveal-d2"><div class="service-num">06</div><div class="service-name">Atendimento Online</div><p class="service-desc">Sessões por videoconferência com a mesma qualidade do presencial, de qualquer lugar do Brasil.</p></div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="section testimonials" id="depoimentos">
+  <div class="testi-head">
+    <div class="section-chip reveal" style="display:inline-flex;">✦ Depoimentos</div>
+    <h2 class="testi-title reveal reveal-d1">O que dizem os pacientes</h2>
+  </div>
+  <div class="testi-grid">
+    <div class="testi-card reveal">
+      <div class="testi-quote-icon">"</div>
+      <p class="testi-text">As sessões com o Dr. Lucas transformaram minha relação com a ansiedade. Aprendi ferramentas que uso todo dia para me manter equilibrada.</p>
+      <div class="testi-author">
+        <div class="author-av">M</div>
+        <div class="author-info"><strong>Mariana Costa</strong><span>Paciente há 1 ano</span><div class="stars">★★★★★</div></div>
+      </div>
+    </div>
+    <div class="testi-card reveal reveal-d1">
+      <div class="testi-quote-icon">"</div>
+      <p class="testi-text">Profissional incrível. Cria um ambiente de total acolhimento. Superou minha fobia social e hoje vivo muito mais plenamente.</p>
+      <div class="testi-author">
+        <div class="author-av">R</div>
+        <div class="author-info"><strong>Rafael Oliveira</strong><span>Paciente há 8 meses</span><div class="stars">★★★★★</div></div>
+      </div>
+    </div>
+    <div class="testi-card reveal reveal-d2">
+      <div class="testi-quote-icon">"</div>
+      <p class="testi-text">O atendimento online funcionou perfeitamente. Mesma qualidade, muito mais comodidade. Recomendo sem hesitar.</p>
+      <div class="testi-author">
+        <div class="author-av">A</div>
+        <div class="author-info"><strong>Ana Beatriz</strong><span>Paciente online · 6 meses</span><div class="stars">★★★★★</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BOOKING -->
+<section class="booking-wrap" id="agendar">
+  <div class="booking-left">
+    <div class="section-chip" style="margin-bottom:1.5rem;">✦ Agendamento</div>
+    <h2 class="booking-title">Dê o primeiro<br>passo hoje</h2>
+    <p class="booking-sub">Agende sua consulta em minutos. Primeira sessão de avaliação com duração de 50 minutos.</p>
+    <div class="bk-info">
+      <div class="bk-item">
+        <div class="bk-icon"><svg width="16" height="16" fill="none" stroke="var(--purple-light)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0112 2a8 8 0 018 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg></div>
+        <div class="bk-text"><strong>Presencial</strong><span>R. das Flores, 123 — Arapongas, PR</span></div>
+      </div>
+      <div class="bk-item">
+        <div class="bk-icon"><svg width="16" height="16" fill="none" stroke="var(--purple-light)" stroke-width="1.5" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
+        <div class="bk-text"><strong>Online</strong><span>Videoconferência — todo o Brasil</span></div>
+      </div>
+      <div class="bk-item">
+        <div class="bk-icon"><svg width="16" height="16" fill="none" stroke="var(--purple-light)" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+        <div class="bk-text"><strong>Duração</strong><span>50 minutos por sessão</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="booking-right">
+    <div class="booking-form" id="bookingForm">
+      <div class="steps">
+        <div class="step-bar active" id="sb1"></div>
+        <div class="step-bar" id="sb2"></div>
+        <div class="step-bar" id="sb3"></div>
+        <span class="step-label" id="stepLabel">Passo 1 de 3</span>
+      </div>
+
+      <!-- Step 1 -->
+      <div class="form-step active" id="step1">
+        <div class="step-title">Escolha a data</div>
+        <p class="step-sub">Selecione um dia disponível</p>
+        <div class="cal-header">
+          <button class="cal-nav" id="prevMonth">‹</button>
+          <span class="cal-month" id="calMonth"></span>
+          <button class="cal-nav" id="nextMonth">›</button>
+        </div>
+        <div class="cal-weekdays">
+          <span class="cal-weekday">Dom</span><span class="cal-weekday">Seg</span><span class="cal-weekday">Ter</span>
+          <span class="cal-weekday">Qua</span><span class="cal-weekday">Qui</span><span class="cal-weekday">Sex</span><span class="cal-weekday">Sáb</span>
+        </div>
+        <div class="cal-days" id="calDays"></div>
+        <div class="form-nav" style="margin-top:1.5rem;">
+          <button class="btn-primary" id="toStep2" style="flex:1;" disabled>Continuar →</button>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="form-step" id="step2">
+        <div class="step-title">Horário & dados</div>
+        <p class="step-sub" id="selDateLabel">Escolha um horário</p>
+        <div style="margin-bottom:1.8rem;">
+          <div style="font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--faint);margin-bottom:0.7rem;">Horários disponíveis</div>
+          <div class="time-grid" id="timeSlots"></div>
+        </div>
+        <div class="fields-row">
+          <div class="field"><label>Nome completo</label><input type="text" placeholder="Seu nome" id="patientName"></div>
+          <div class="field"><label>Telefone</label><input type="tel" placeholder="(43) 99999-9999" id="patientPhone"></div>
+        </div>
+        <div class="field"><label>E-mail</label><input type="email" placeholder="seu@email.com" id="patientEmail"></div>
+        <div class="field">
+          <label>Modalidade</label>
+          <select id="modality">
+            <option value="">Selecione</option>
+            <option value="presencial">Presencial — Arapongas, PR</option>
+            <option value="online">Online — Videoconferência</option>
+          </select>
+        </div>
+        <div class="form-nav">
+          <button class="btn-back" id="backTo1">← Voltar</button>
+          <button class="btn-primary" id="toStep3" style="flex:1;" disabled>Confirmar agendamento</button>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="form-step" id="step3">
+        <div class="success-state" id="successState" style="display:flex;">
+          <div class="success-icon">✓</div>
+          <div class="success-title">Consulta agendada!</div>
+          <p class="success-sub" id="successText">Sua consulta foi solicitada. Você receberá uma confirmação por e-mail em breve.</p>
+          <button class="btn-primary" style="margin-top:0.5rem;" onclick="resetBooking()">Agendar nova consulta</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">
+    <div class="footer-logo-icon"><svg width="14" height="14" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0112 2a8 8 0 018 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg></div>
+    <span class="footer-logo-text">Dr. Lucas Gabriel · Psicólogo Clínico</span>
+  </div>
+  <span class="footer-copy">© 2026 · Todos os direitos reservados</span>
+  <span class="footer-badge">Powered by Velora</span>
+</footer>
+
+<script>
+// Cursor
+const cur = document.getElementById('cursor'), ring = document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
+(function anim(){rx+=(mx-rx)*0.12;ry+=(my-ry)*0.12;cur.style.left=mx-4+'px';cur.style.top=my-4+'px';ring.style.left=rx-18+'px';ring.style.top=ry-18+'px';requestAnimationFrame(anim);})();
+document.querySelectorAll('button,a,.cal-day,.time-slot,.service-card,.testi-card,.cred-card').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{ring.style.width='52px';ring.style.height='52px';ring.style.marginLeft='-8px';ring.style.marginTop='-8px';ring.style.borderColor='rgba(167,139,250,0.7)';});
+  el.addEventListener('mouseleave',()=>{ring.style.width='36px';ring.style.height='36px';ring.style.marginLeft='0';ring.style.marginTop='0';ring.style.borderColor='rgba(167,139,250,0.4)';});
+});
+
+// Scroll reveal
+const io = new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target);}});},{threshold:0.1});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+// Calendar
+const months=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const days=['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
+let cy=new Date().getFullYear(),cm=new Date().getMonth(),selDate=null,selTime=null;
+
+function renderCal(){
+  document.getElementById('calMonth').textContent=months[cm]+' '+cy;
+  const grid=document.getElementById('calDays'); grid.innerHTML='';
+  const first=new Date(cy,cm,1).getDay(), total=new Date(cy,cm+1,0).getDate(), today=new Date();
+  for(let i=0;i<first;i++){const e=document.createElement('div');e.className='cal-day empty';grid.appendChild(e);}
+  for(let d=1;d<=total;d++){
+    const el=document.createElement('div');
+    const dt=new Date(cy,cm,d), wd=dt.getDay();
+    const past=dt<new Date(today.getFullYear(),today.getMonth(),today.getDate());
+    const unav=[0,6].includes(wd)||past;
+    const isToday=d===today.getDate()&&cm===today.getMonth()&&cy===today.getFullYear();
+    el.className='cal-day'+(unav?' unavailable':' available')+(isToday?' today':'');
+    if(selDate&&d===selDate.getDate()&&cm===selDate.getMonth()&&cy===selDate.getFullYear())el.classList.add('selected');
+    el.textContent=d;
+    if(!unav)el.addEventListener('click',()=>{selDate=new Date(cy,cm,d);document.getElementById('toStep2').disabled=false;renderCal();});
+    grid.appendChild(el);
+  }
+}
+document.getElementById('prevMonth').addEventListener('click',()=>{const n=new Date();if(cy>n.getFullYear()||(cy===n.getFullYear()&&cm>n.getMonth())){cm--;if(cm<0){cm=11;cy--;}renderCal();}});
+document.getElementById('nextMonth').addEventListener('click',()=>{cm++;if(cm>11){cm=0;cy++;}renderCal();});
+renderCal();
+
+function goTo(n){
+  document.querySelectorAll('.form-step').forEach(s=>s.classList.remove('active'));
+  document.getElementById('step'+n).classList.add('active');
+  ['sb1','sb2','sb3'].forEach((id,i)=>{
+    const b=document.getElementById(id);
+    b.className='step-bar'+(i+1<n?' done':i+1===n?' active':'');
+  });
+  document.getElementById('stepLabel').textContent='Passo '+n+' de 3';
+}
+
+document.getElementById('toStep2').addEventListener('click',()=>{
+  goTo(2);
+  const label=document.getElementById('selDateLabel');
+  label.textContent=days[selDate.getDay()]+', '+selDate.getDate()+' de '+months[selDate.getMonth()];
+  const slots=['08:00','09:00','10:00','11:00','14:00','15:00','16:00','17:00','18:00'];
+  const unavSlots=['09:00','14:00','16:00'];
+  const cont=document.getElementById('timeSlots'); cont.innerHTML='';
+  slots.forEach(t=>{
+    const s=document.createElement('div');
+    s.className='time-slot'+(unavSlots.includes(t)?' unavailable':'');
+    s.textContent=t;
+    if(!unavSlots.includes(t))s.addEventListener('click',()=>{
+      document.querySelectorAll('.time-slot').forEach(x=>x.classList.remove('selected'));
+      s.classList.add('selected'); selTime=t; checkStep2();
+    });
+    cont.appendChild(s);
+  });
+});
+
+function checkStep2(){
+  const n=document.getElementById('patientName').value.trim();
+  const e=document.getElementById('patientEmail').value.trim();
+  const m=document.getElementById('modality').value;
+  document.getElementById('toStep3').disabled=!(selTime&&n&&e&&m);
+}
+['patientName','patientEmail','patientPhone','modality'].forEach(id=>{document.getElementById(id).addEventListener('input',checkStep2);});
+
+document.getElementById('backTo1').addEventListener('click',()=>goTo(1));
+document.getElementById('toStep3').addEventListener('click',()=>{
+  goTo(3);
+  const n=document.getElementById('patientName').value.trim();
+  const dStr=days[selDate.getDay()]+', '+selDate.getDate()+' de '+months[selDate.getMonth()];
+  document.getElementById('successText').textContent=`Olá, ${n}! Consulta agendada para ${dStr} às ${selTime}. Confirmação enviada para ${document.getElementById('patientEmail').value}.`;
+});
+
+function resetBooking(){selDate=null;selTime=null;['patientName','patientEmail','patientPhone'].forEach(id=>document.getElementById(id).value='');document.getElementById('modality').value='';document.getElementById('toStep2').disabled=true;goTo(1);renderCal();}
+</script>
+</body>
+</html>

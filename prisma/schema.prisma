@@ -1,0 +1,356 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum UserRole {
+  PSYCHOLOGIST
+  ADMIN
+  owner
+  secretary
+  staff
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+enum AppointmentType {
+  INITIAL
+  FOLLOW_UP
+  ONLINE
+  IN_PERSON
+  EMERGENCY
+}
+
+enum NotificationType {
+  APPOINTMENT_BOOKED
+  APPOINTMENT_CANCELLED
+  APPOINTMENT_CONFIRMED
+  REMINDER
+  UPCOMING
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+  PREFER_NOT_SAY
+}
+
+enum ReviewStatus {
+  APPROVED
+  REJECTED
+  PENDING
+}
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  password      String
+  name          String
+  slug          String   @unique
+  avatar        String?
+  role          UserRole @default(PSYCHOLOGIST)
+  specialty     String   @default("Psicologia")
+  ownerId       String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  settings       UserSettings?
+  patients       Patient[]
+  appointments   Appointment[]
+  availability   AvailabilitySlot[]
+  breaks         Break[]
+  notifications  Notification[]
+  galleryImages  ProfileGalleryImage[]
+  reviews        PatientReview[]
+
+  // Relações SaaS
+  subscription       Subscription?
+  whatsappConnection WhatsAppConnection?
+  aiAssistant        AIAssistant?
+  customDomain       CustomDomain?
+  automationSettings AutomationSettings?
+
+  owner              User?    @relation("UserToSubUsers", fields: [ownerId], references: [id], onDelete: Cascade)
+  subUsers           User[]   @relation("UserToSubUsers")
+
+  @@map("users")
+}
+
+model UserSettings {
+  id                    String  @id @default(cuid())
+  userId                String  @unique
+  defaultDuration       Int     @default(50)
+  defaultPrice          Float   @default(200)
+  workStartHour         Int     @default(8)
+  workEndHour           Int     @default(18)
+  workDays              Int[]   @default([1, 2, 3, 4, 5])
+  emailNotifications    Boolean @default(true)
+  pushNotifications     Boolean @default(true)
+  reminderMinutes       Int     @default(30)
+  theme                 String  @default("system")
+  bookingSlug           String?
+  landingHeadline       String?
+  landingBio            String? @db.Text
+  yearsExperience       Int?
+  birthPlace            String?
+  education             String?
+  specializationText    String?
+  officeAddress         String?
+  officeCity            String?
+  officeState           String?
+  officeZip             String?
+  showBirthPlace        Boolean @default(false)
+  landingPublished      Boolean @default(true)
+  landingConfig         Json?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_settings")
+}
+
+model ProfileGalleryImage {
+  id        String   @id @default(cuid())
+  userId    String
+  imageUrl  String
+  caption   String?
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, sortOrder])
+  @@map("profile_gallery_images")
+}
+
+model PatientReview {
+  id          String       @id @default(cuid())
+  userId      String
+  patientId   String?
+  authorName  String
+  authorEmail String
+  authorCpf   String
+  rating      Int
+  comment     String       @db.Text
+  status      ReviewStatus @default(PENDING)
+  createdAt   DateTime     @default(now())
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  patient Patient? @relation(fields: [patientId], references: [id], onDelete: SetNull)
+
+  @@unique([userId, authorCpf])
+  @@index([userId, status])
+  @@map("patient_reviews")
+}
+
+model Patient {
+  id          String    @id @default(cuid())
+  userId      String
+  name        String
+  cpf         String
+  phone       String
+  email       String
+  birthDate   DateTime?
+  gender      Gender?
+  avatar      String?
+  notes       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  appointments Appointment[]
+  reviews      PatientReview[]
+
+  @@unique([userId, cpf])
+  @@index([userId, name])
+  @@map("patients")
+}
+
+model Appointment {
+  id          String            @id @default(cuid())
+  userId      String
+  patientId   String
+  date        DateTime
+  startTime   String
+  endTime     String
+  status      AppointmentStatus @default(PENDING)
+  type        AppointmentType   @default(IN_PERSON)
+  price       Float
+  notes       String?
+  reason      String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@index([userId, date])
+  @@index([userId, status])
+  @@map("appointments")
+}
+
+model AvailabilitySlot {
+  id        String   @id @default(cuid())
+  userId    String
+  date      DateTime
+  startTime String
+  endTime   String
+  isBooked  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, date])
+  @@map("availability_slots")
+}
+
+model Break {
+  id        String   @id @default(cuid())
+  userId    String
+  date      DateTime
+  startTime String
+  endTime   String
+  reason    String?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, date])
+  @@map("breaks")
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  type      NotificationType
+  title     String
+  message   String
+  read      Boolean          @default(false)
+  link      String?
+  createdAt DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, read])
+  @@map("notifications")
+}
+
+model Subscription {
+  id               String   @id @default(cuid())
+  userId           String   @unique
+  plan             String   @default("Starter") // Starter, Advanced, Max
+  status           String   @default("trial")   // trial, active, expired, cancelled
+  trialStartedAt   DateTime @default(now())
+  trialEndsAt      DateTime
+  startedAt        DateTime @default(now())
+  expiresAt        DateTime?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("subscriptions")
+}
+
+model WhatsAppConnection {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  phoneNumber String?
+  status      String   @default("disconnected") // disconnected, connected, connecting
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("whatsapp_connections")
+}
+
+model AIAssistant {
+  id           String   @id @default(cuid())
+  userId       String   @unique
+  prompt       String   @db.Text
+  model        String   @default("gpt-4o") // openai, claude, gemini, etc.
+  active       Boolean  @default(false)
+  specialties  String?  @db.Text
+  hours        String?  @db.Text
+  location     String?  @db.Text
+  price        Float?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("ai_assistants")
+}
+
+model CustomDomain {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  domain    String   @unique // ex: agenda.clinica.com.br
+  status    String   @default("pending") // pending, active, failed
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("custom_domains")
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String   // login, logout, update_settings, upgrade, delete_patient, etc.
+  ipAddress String?
+  details   Json?
+  createdAt DateTime @default(now())
+
+  @@map("audit_logs")
+}
+
+model AutomationSettings {
+  id                  String   @id @default(cuid())
+  userId              String   @unique
+  confirmationEnabled Boolean  @default(true)
+  reminderEnabled     Boolean  @default(true)
+  reminder24h         Boolean  @default(true)
+  reminder12h         Boolean  @default(false)
+  reminder1h          Boolean  @default(false)
+  feedbackEnabled     Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("automation_settings")
+}
+
+model SystemConfig {
+  id                 String   @id @default("global")
+  proPlanPrice       Float    @default(97.0)
+  activeNotification String?  @db.Text
+  updatedAt          DateTime @updatedAt
+
+  @@map("system_configs")
+}
+
+model Coupon {
+  id              String   @id @default(cuid())
+  code            String   @unique
+  discountPercent Float
+  active          Boolean  @default(true)
+  notifyUsers     Boolean  @default(false)
+  createdAt       DateTime @default(now())
+
+  @@map("coupons")
+}
+
