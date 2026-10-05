@@ -1,5 +1,6 @@
-﻿"use client";
+"use client";
 
+import { Suspense } from "react";
 import { useState, useEffect, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -19,7 +20,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { BizAiLogo } from "@/components/shared/BizAi-logo";
 
-export default function PixModalPage() {
+function PixModalContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -189,6 +190,18 @@ export default function PixModalPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function PixModalPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center text-white">
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-500" />
+      </div>
+    }>
+      <PixModalContent />
+    </Suspense>
   );
 }
 
